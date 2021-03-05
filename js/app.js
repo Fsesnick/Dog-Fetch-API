@@ -10,7 +10,7 @@ function fetchData(url) {
   return fetch(url)
            .then(checkStatus)  
            .then(res => res.json())
-           .catch(error => console.log('Looks like there was a problem!', error))
+           .catch(error => console.log('Parece que houve um problema !', error))
 }
 
 Promise.all([
@@ -47,7 +47,7 @@ function generateOptions(data) {
 function generateImage(data) {
   const html = `
     <img src='${data}' alt>
-    <p>Click to view images of ${select.value}s</p>
+    <p>Clique para ver imagens de ${select.value}s</p>
   `;
   card.innerHTML = html;
 }
@@ -61,7 +61,7 @@ function fetchBreedImage() {
     .then(data => {
       img.src = data.message;
       img.alt = breed;
-      p.textContent = `Click to view more ${breed}s`;
+      p.textContent = `Clique para ver mais ${breed}s`;
     })
 }
 
@@ -70,7 +70,27 @@ function fetchBreedImage() {
 // ------------------------------------------
 select.addEventListener('change', fetchBreedImage);
 card.addEventListener('click', fetchBreedImage);
-
+form.addEventListener('submit', postData);
 // ------------------------------------------
 //  POST DATA
 // ------------------------------------------
+
+function postData(e) {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const comment = document.getElementById('comment').value;
+  
+  const config = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name, comment }) 
+  }
+  
+  fetch('https://jsonplaceholder.typicode.com/comments', config)
+    .then(checkStatus)
+    .then(res => res.json())
+    .then(data => console.log(data))
+}
+
