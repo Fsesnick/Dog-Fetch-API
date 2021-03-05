@@ -10,14 +10,20 @@ function fetchData(url) {
   return fetch(url)
            .then(checkStatus)  
            .then(res => res.json())
-           .catch(error => console.log('Parece que houve um problema!', error))
+           .catch(error => console.log('Looks like there was a problem!', error))
 }
 
-fetchData('https://dog.ceo/api/breeds/list')
-  .then(data => generateOptions(data.message))
-
-fetchData('https://dog.ceo/api/breeds/image/random')
-  .then(data => generateImage(data.message))
+Promise.all([
+  fetchData('https://dog.ceo/api/breeds/list'),
+  fetchData('https://dog.ceo/api/breeds/image/random')  
+])
+.then(data => {
+  const breedList = data[0].message;
+  const randomImage = data[1].message;
+  
+  generateOptions(breedList);
+  generateImage(randomImage);
+})
 
 // ------------------------------------------
 //  HELPER FUNCTIONS
@@ -41,7 +47,7 @@ function generateOptions(data) {
 function generateImage(data) {
   const html = `
     <img src='${data}' alt>
-    <p>Clique para visualizar mais ${select.value}s</p>
+    <p>Click to view images of ${select.value}s</p>
   `;
   card.innerHTML = html;
 }
@@ -55,7 +61,7 @@ function fetchBreedImage() {
     .then(data => {
       img.src = data.message;
       img.alt = breed;
-      p.textContent = `Clique para visualizar mais ${breed}s`;
+      p.textContent = `Click to view more ${breed}s`;
     })
 }
 
@@ -68,5 +74,3 @@ card.addEventListener('click', fetchBreedImage);
 // ------------------------------------------
 //  POST DATA
 // ------------------------------------------
-
-
